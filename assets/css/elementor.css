@@ -1,0 +1,101 @@
+/**
+ * Elementor Compatibility Styles
+ * @package AxAI_Galaxy
+ * @since 1.0
+ */
+
+/* Elementor Canvas Template */
+.elementor-template-canvas #starfield-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.elementor-template-canvas .site-header,
+.elementor-template-canvas .site-footer {
+    display: none;
+}
+
+.elementor-template-canvas #page {
+    position: relative;
+    z-index: 1;
+}
+
+/* Elementor Section Backgrounds */
+.elementor-section {
+    position: relative;
+}
+
+.elementor-section.elementor-section-boxed > .elementor-container {
+    max-width: 1200px;
+}
+
+/* Elementor Widget Spacing */
+.elementor-widget-wrap {
+    position: relative;
+}
+
+/* Ensure text is visible over galaxy background */
+.elementor-widget-heading .elementor-heading-title {
+    color: inherit;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.elementor-widget-text-editor {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Elementor Buttons */
+.elementor-button {
+    transition: all 0.3s ease;
+}
+
+.elementor-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Elementor Global Colors Support */
+.elementor-element {
+    --e-global-color-primary: #667eea;
+    --e-global-color-secondary: #764ba2;
+    --e-global-color-text: #cbd5e1;
+    --e-global-color-accent: #a78bfa;
+}
+
+/* Elementor Typography */
+.elementor-element h1,
+.elementor-element h2,
+.elementor-element h3,
+.elementor-element h4,
+.elementor-element h5,
+.elementor-element h6 {
+    color: #a78bfa;
+}
+
+/* Container padding for better spacing */
+.elementor-section .elementor-container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .elementor-section .elementor-container {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+}
+
+/* Ensure Elementor popups work with galaxy */
+.elementor-popup-modal {
+    z-index: 9999;
+}
+
+/* Elementor Editor Mode */
+.elementor-editor-active #starfield-canvas {
+    pointer-events: none;
+}
