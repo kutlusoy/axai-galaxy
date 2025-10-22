@@ -539,6 +539,19 @@ function axai_customize_register($wp_customize) {
         'type'    => 'textarea',
     ));
     
+    // Hero Text Editor
+    $wp_customize->add_setting('axai_hero_text', array(
+        'default'           => '',
+        'transport'         => 'refresh',
+        'sanitize_callback' => 'wp_kses_post',
+    ));
+    $wp_customize->add_control('axai_hero_text', array(
+        'label'       => __('Hero Text Content', 'axai-galaxy'),
+        'description' => __('Add formatted text content below the subtitle. Supports HTML formatting.', 'axai-galaxy'),
+        'section'     => 'axai_hero_section',
+        'type'        => 'textarea',
+    ));
+
     // Hero Button Text
     $wp_customize->add_setting('axai_hero_button_text', array(
         'default'           => __('Learn More', 'axai-galaxy'),

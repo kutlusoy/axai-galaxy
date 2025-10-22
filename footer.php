@@ -1,6 +1,6 @@
 <?php
 /**
- * The footer for AxAI Galaxy theme - KORRIGIERT
+ * The footer for AxAI Galaxy theme
  *
  * @package AxAI_Galaxy
  * @since 1.0
@@ -9,10 +9,13 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+$has_content = trim(get_the_content()) !== '';
 ?>
 
     </div><!-- #content -->
 
+    <?php if ($has_content) : ?>
     <!-- Footer -->
     <footer id="colophon" class="site-footer">
         <?php if (is_active_sidebar('footer-1') || is_active_sidebar('footer-2') || is_active_sidebar('footer-3') || is_active_sidebar('footer-4')) : ?>
@@ -34,7 +37,7 @@ if (!defined('ABSPATH')) {
         <div class="site-info">
             <div class="footer-container <?php echo esc_attr(get_theme_mod('axai_footer_container_width', 'boxed')); ?>">
                 <div class="footer-content">
-                    <div class="footer-copyright">
+                    <div class="copyright">
                         <?php
                         $copyright_text = get_theme_mod('axai_copyright_text', 
                             sprintf(
@@ -74,12 +77,8 @@ if (!defined('ABSPATH')) {
             </div><!-- .footer-container -->
         </div><!-- .site-info -->
     </footer><!-- #colophon -->
+    <?php endif; ?>
 </div><!-- #page -->
-
-<!-- Scroll to Top Button -->
-<div class="scroll-to-top" id="scrollToTop">
-    <span>↑</span>
-</div>
 
 <?php wp_footer(); ?>
 

@@ -187,7 +187,6 @@
             this.targetSpeed = this.idleSpeed;
             
             this.mousePos = { x: 0, y: 0 };
-            this.isPaused = false;
             this.scrollY = 0;
             this.time = 0;
             this.isInWarp = false;
@@ -1000,222 +999,6 @@
         }
         
         animate() {
-            if (!this.isPaused) {
-                this.time += 0.016;
-                
-                const lerpFactor = this.isInWarp ? 0.02 : 0.04;
-                this.currentSpeed += (this.targetSpeed - this.currentSpeed) * lerpFactor;
-                
-                const warpIntensity = Math.min(1.0, Math.max(0.0, (this.currentSpeed - this.idleSpeed) / (this.warpSpeed - this.idleSpeed)));
-                
-                this.starPointsMesh.material.opacity = 1 - warpIntensity;
-                this.starPointData.forEach(closeStar => {
-                    closeStar.mesh.material.opacity = 1 - warpIntensity;
-                });
-                
-                this.starData.forEach((star) => {
-                    const positions = star.line.geometry.attributes.position.array;
-                    
-                    const distFromCenter = Math.sqrt(star.baseX * star.baseX + star.baseY * star.baseY);
-                    const pushFactor = this.currentSpeed * 0.025 * star.velocity;
-                    
-                    const newX = star.baseX + (star.baseX / distFromCenter) * pushFactor * warpIntensity * 50;
-                    const newY = star.baseY + (star.baseY / distFromCenter) * pushFactor * warpIntensity * 50;
-                    
-                    positions[0] = newX;
-                    positions[1] = newY;
-                    positions[2] += this.currentSpeed * star.velocity;
-                    
-                    const lineLength = 1 + (warpIntensity * 347);
-                    positions[3] = newX;
-                    positions[4] = newY;
-                    positions[5] = positions[2] - lineLength;
-                    
-                    star.line.geometry.attributes.position.needsUpdate = true;
-                    
-                    const currentDistance = Math.sqrt(newX * newX + newY * newY);
-                    
-                    if (positions[2] > 1000 || currentDistance > 2000) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * (config.starMaxRadius - config.starMinRadius) + config.starMinRadius;
-                        
-                        star.baseX = Math.cos(angle) * radius;
-                        star.baseY = Math.sin(angle) * radius;
-                        star.angle = angle;
-                        star.radius = radius;
-                        
-                        positions[0] = star.baseX;
-                        positions[1] = star.baseY;
-                        positions[2] = -2000;
-                        positions[3] = star.baseX;
-                        positions[4] = star.baseY;
-                        positions[5] = -2000 - 3;
-                    }
-                    
-                    const brightness = config.starBrightness + (warpIntensity * config.starWarpBrightness);
-                    star.line.material.color.copy(star.baseColor).multiplyScalar(brightness);
-                    
-                    const opacity = this.calculateDepthOpacity(positions[2]) * warpIntensity;
-                    star.line.material.opacity = opacity;
-                });
-                
-                const pointPos = this.starPointsMesh.geometry.attributes.position;
-                for (let i = 0; i < this.starData.length; i++) {
-                    const star = this.starData[i];
-                    pointPos.array[i * 3] = star.line.geometry.attributes.position.array[0];
-                    pointPos.array[i * 3 + 1] = star.line.geometry.attributes.position.array[1];
-                    pointPos.array[i * 3 + 2] = star.line.geometry.attributes.position.array[2];
-                }
-                pointPos.needsUpdate = true;
-                
-                this.starPointData.forEach(closeStar => {
-                    const pos = closeStar.mesh.geometry.attributes.position.array;
-                    pos[2] += this.currentSpeed * closeStar.velocity * 0.5;
-                    
-                    if (pos[2] > 100) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * 50 + 10;
-                        pos[0] = Math.cos(angle) * radius;
-                        pos[1] = Math.sin(angle) * radius;
-                        pos[2] = -50;
-                        
-                        closeStar.baseX = pos[0];
-                        closeStar.baseY = pos[1];
-                        closeStar.baseZ = pos[2];
-                    }
-                    
-                    closeStar.mesh.geometry.attributes.position.needsUpdate = true;
-                });
-                
-                const nebulaPos = this.nebula.geometry.attributes.position;
-                const nebulaCol = this.nebula.geometry.attributes.color;
-                
-                for (let i = 0; i < nebulaPos.count; i++) {
-                    const i3 = i * 3;
-                    
-                    const baseR = this.nebulaBaseColors[i3];
-                    const baseG = this.nebulaBaseColors[i3 + 1];
-                    const baseB = this.nebulaBaseColors[i3 + 2];
-                    
-                    const trailData = this.nebulaTrailData[i];
-                    const targetR = trailData.warpColorR;
-                    const targetG = trailData.warpColorG;
-                    const targetB = trailData.warpColorB;
-                    
-                    nebulaCol.array[i3] = baseR + (targetR - baseR) * warpIntensity;
-                    nebulaCol.array[i3 + 1] = baseG + (targetG - baseG) * warpIntensity;
-                    nebulaCol.array[i3 + 2] = baseB + (targetB - baseB) * warpIntensity;
-                    
-                    const x = nebulaPos.array[i3];
-                    const y = nebulaPos.array[i3 + 1];
-                    
-                    const distanceFromCenter = Math.sqrt(x * x + y * y);
-                    const pushFactor = this.currentSpeed * 0.012;
-                    
-                    if (distanceFromCenter > 0) {
-                        nebulaPos.array[i3] += (x / distanceFromCenter) * pushFactor * warpIntensity;
-                        nebulaPos.array[i3 + 1] += (y / distanceFromCenter) * pushFactor * warpIntensity;
-                    }
-                    
-                    const stretchFactor = 1 + (warpIntensity * 5);
-                    nebulaPos.array[i3 + 2] += this.currentSpeed * 0.1 * stretchFactor;
-                    
-                    const newDistance = Math.sqrt(nebulaPos.array[i3] * nebulaPos.array[i3] + nebulaPos.array[i3 + 1] * nebulaPos.array[i3 + 1]);
-                    
-                    if (nebulaPos.array[i3 + 2] > 1000 || newDistance > 2000) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * (config.nebulaMaxRadius - config.nebulaMinRadius) + config.nebulaMinRadius;
-                        
-                        nebulaPos.array[i3] = Math.cos(angle) * radius;
-                        nebulaPos.array[i3 + 1] = Math.sin(angle) * radius;
-                        nebulaPos.array[i3 + 2] = -2000;
-                        
-                        this.nebulaTrailData[i].originalX = nebulaPos.array[i3];
-                        this.nebulaTrailData[i].originalY = nebulaPos.array[i3 + 1];
-                        this.nebulaTrailData[i].originalZ = nebulaPos.array[i3 + 2];
-                    }
-                }
-                nebulaPos.needsUpdate = true;
-                nebulaCol.needsUpdate = true;
-                
-                if (this.isInWarp || warpIntensity > 0.1) {
-                    this.createNebulaTrails();
-                } else {
-                    this.nebulaTrails.forEach(trail => this.scene.remove(trail));
-                    this.nebulaTrails = [];
-                }
-                
-                const baseOpacity = this.getOpacity() * config.nebulaBaseOpacity;
-                const warpOpacityBoost = warpIntensity * 0.01;
-                this.nebulaMaterial.opacity = baseOpacity + warpOpacityBoost;
-                
-                this.nebulaMaterial.size = config.nebulaBaseSize + (warpIntensity * 600);
-                
-                if (config.galaxiesEnabled && this.galaxyGroup) {
-                    const shouldSpawn = warpIntensity > 0.3 ? (Math.random() < 0.01) : (Math.random() < 0.002);
-                    
-                    if (shouldSpawn) {
-                        this.spawnGalaxy();
-                    }
-                    
-                    for (let i = this.galaxies.length - 1; i >= 0; i--) {
-                        const galaxy = this.galaxies[i];
-                        
-                        galaxy.userData.fadeIn = Math.min(1, galaxy.userData.fadeIn + 0.02);
-                        
-                        const speedMultiplier = warpIntensity > 0.1 ? 1.0 : 0.15;
-                        galaxy.position.z += this.currentSpeed * galaxy.userData.velocity * config.galaxySpeed * speedMultiplier;
-                        
-                        galaxy.rotation.z += galaxy.userData.rotationSpeed;
-                        
-                        galaxy.children.forEach(child => {
-                            if (child.material) {
-                                child.material.opacity = child.userData.baseOpacity * galaxy.userData.fadeIn;
-                            }
-                        });
-                        
-                        if (galaxy.position.z > 1000) {
-                            this.galaxyGroup.remove(galaxy);
-                            this.galaxies.splice(i, 1);
-                        }
-                    }
-                }
-                
-                let targetCameraX = 0;
-                let targetCameraY = 0;
-                
-                if (this.buttonPositions.length > 0) {
-                    const primaryButton = this.buttonPositions[0];
-                    targetCameraX = (primaryButton.x - window.innerWidth / 2) * 0.5;
-                    targetCameraY = ((primaryButton.y - this.scrollY) - window.innerHeight / 2) * 0.5;
-                }
-                
-                this.cameraOffset.x += (targetCameraX - this.cameraOffset.x) * 0.05;
-                this.cameraOffset.y += (targetCameraY - this.cameraOffset.y) * 0.05;
-                
-                if (this.perspectiveEnabled) {
-                    const parallaxX = (this.mousePos.x / window.innerWidth - 0.5) * this.parallaxIntensity;
-                    const parallaxY = (this.mousePos.y / window.innerHeight - 0.5) * this.parallaxIntensity;
-                    
-                    this.camera.position.x = this.cameraOffset.x + parallaxX;
-                    this.camera.position.y = this.cameraOffset.y + parallaxY;
-                }
-                
-                if (this.isInWarp) {
-                    this.camera.rotation.z = Math.sin(this.time * 2) * 0.02;
-                    this.camera.fov = config.cameraFOV + (warpIntensity * 20);
-                    this.camera.updateProjectionMatrix();
-                } else {
-                    this.camera.rotation.z *= 0.95;
-                    this.camera.fov += (config.cameraFOV - this.camera.fov) * 0.05;
-                    this.camera.updateProjectionMatrix();
-                }
-                
-                this.starLines.rotation.z += 0.0001;
-                this.starPoints.rotation.z += 0.0001;
-                this.nebula.rotation.z -= 0.00005;
-            }
-            
             this.renderer.render(this.scene, this.camera);
             requestAnimationFrame(() => this.animate());
         }
@@ -1231,38 +1014,12 @@
                 }
             }
         }
-        
-        pause() {
-            this.isPaused = true;
-        }
-        
-        resume() {
-            this.isPaused = false;
-        }
     }
     
     document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.getElementById('starfield-canvas');
         if (canvas) {
             window.axaiStarfield = new AxAIStarfield(canvas);
-            
-            // Pause/Play Button Event Listener
-            const pauseButton = document.getElementById('pauseButton');
-            if (pauseButton) {
-                pauseButton.addEventListener('click', function() {
-                    if (window.axaiStarfield) {
-                        if (window.axaiStarfield.isPaused) {
-                            window.axaiStarfield.resume();
-                            this.innerHTML = '⏸';
-                            this.title = 'Animation pausieren';
-                        } else {
-                            window.axaiStarfield.pause();
-                            this.innerHTML = '▶';
-                            this.title = 'Animation fortsetzen';
-                        }
-                    }
-                });
-            }
         }
     });
     

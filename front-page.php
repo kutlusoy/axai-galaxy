@@ -11,18 +11,20 @@ if (!defined('ABSPATH')) {
 }
 
 get_header();
+
+$has_content = trim(get_the_content()) !== '';
 ?>
 
 <main id="primary" class="site-main front-page">
     
     <?php if (get_theme_mod('axai_show_hero_section', true)) : ?>
-        <!-- Hero Section -->
         <section class="hero-section <?php echo esc_attr(get_theme_mod('axai_hero_layout', 'full-width')); ?>">
             <div class="hero-container <?php echo esc_attr(get_theme_mod('axai_hero_content_width', 'boxed') === 'boxed' ? 'boxed' : 'full-width'); ?>">
                 <div class="hero-content">
                     <?php
                     $hero_title = get_theme_mod('axai_hero_title', get_bloginfo('name'));
                     $hero_subtitle = get_theme_mod('axai_hero_subtitle', get_bloginfo('description'));
+                    $hero_text = get_theme_mod('axai_hero_text', '');
                     $hero_button_text = get_theme_mod('axai_hero_button_text', __('Learn More', 'axai-galaxy'));
                     $hero_button_url = get_theme_mod('axai_hero_button_url', '#content');
                     ?>
@@ -35,12 +37,13 @@ get_header();
                         <p class="hero-subtitle"><?php echo esc_html($hero_subtitle); ?></p>
                     <?php endif; ?>
                     
+                    <?php if ($hero_text) : ?>
+                        <div class="hero-text"><?php echo wp_kses_post($hero_text); ?></div>
+                    <?php endif; ?>
+                    
                     <?php if ($hero_button_text && $hero_button_url) : ?>
                         <a href="<?php echo esc_url($hero_button_url); ?>" class="hero-button">
                             <?php echo esc_html($hero_button_text); ?>
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -48,7 +51,7 @@ get_header();
         </section>
     <?php endif; ?>
 
-    <!-- Main Content -->
+    <?php if ($has_content) : ?>
     <div class="front-page-content <?php echo esc_attr(get_theme_mod('axai_content_layout', 'boxed')); ?>">
         <div class="content-container <?php echo esc_attr(get_theme_mod('axai_content_width_type', 'boxed') === 'boxed' ? 'boxed' : 'full-width'); ?>">
             <?php
@@ -65,15 +68,16 @@ get_header();
                             'after'  => '</div>',
                         ));
                         ?>
-                    </div><!-- .entry-content -->
-                </article><!-- #post-<?php the_ID(); ?> -->
+                    </div>
+                </article>
                 <?php
             endwhile;
             ?>
         </div>
     </div>
+    <?php endif; ?>
 
-</main><!-- #primary -->
+</main>
 
 <?php
 get_footer();

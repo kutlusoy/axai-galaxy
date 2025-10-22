@@ -1,6 +1,6 @@
 <?php
 /**
- * The header for AxAI Galaxy theme - VOLLSTÄNDIG KORRIGIERT
+ * The header for AxAI Galaxy theme
  *
  * @package AxAI_Galaxy
  * @since 1.0
@@ -21,29 +21,7 @@
 <div id="page" class="site">
     <a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e('Skip to content', 'axai-galaxy'); ?></a>
     
-    <!-- Starfield Canvas -->
     <canvas id="starfield-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
-    
-    <!-- Pause/Resume Button -->
-    <button id="pauseButton" title="<?php esc_attr_e('Pause animation', 'axai-galaxy'); ?>" style="
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: rgba(147, 51, 234, 0.2);
-        border: 2px solid rgba(147, 51, 234, 0.5);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: #fff;
-        backdrop-filter: blur(10px);
-    ">⏸</button>
     
     <header id="masthead" class="site-header <?php echo esc_attr('logo-' . get_theme_mod('axai_logo_position', 'left')); ?> <?php echo esc_attr('menu-' . get_theme_mod('axai_menu_alignment', 'right')); ?>">
         <div class="header-container <?php echo esc_attr(get_theme_mod('axai_header_container_width', 'boxed')); ?>">

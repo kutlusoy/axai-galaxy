@@ -7,16 +7,13 @@
 (function($) {
     'use strict';
     
-    // Wait for DOM to be ready
     $(document).ready(function() {
         
-        // Set CSS variable for logo spacing
         var logoSpacing = $('body').data('logo-spacing') || 40;
         if (typeof document.documentElement.style.setProperty === 'function') {
             document.documentElement.style.setProperty('--logo-spacing', logoSpacing + 'px');
         }
         
-        // Mobile Menu Toggle
         const menuToggle = $('#menuToggle');
         const mainMenu = $('.main-menu');
         
@@ -26,7 +23,6 @@
             $('body').toggleClass('menu-open');
         });
         
-        // Close mobile menu when clicking outside
         $(document).on('click', function(e) {
             if (!menuToggle.is(e.target) && menuToggle.has(e.target).length === 0 &&
                 !mainMenu.is(e.target) && mainMenu.has(e.target).length === 0) {
@@ -36,14 +32,12 @@
             }
         });
         
-        // Close mobile menu on menu item click
         $('.main-menu a:not(.external)').on('click', function() {
             menuToggle.removeClass('active');
             mainMenu.removeClass('active');
             $('body').removeClass('menu-open');
         });
         
-        // Smooth scrolling for internal links
         $('a[href^="#"]').on('click', function(e) {
             const target = $(this.hash);
             if (target.length) {
@@ -54,47 +48,23 @@
             }
         });
         
-        // Header scroll effect
         const header = $('#masthead');
         let lastScroll = 0;
         
         $(window).on('scroll', function() {
             const currentScroll = $(this).scrollTop();
             
-            // Add scrolled class
             if (currentScroll > 50) {
                 header.addClass('scrolled');
             } else {
                 header.removeClass('scrolled');
             }
             
-            // Update scroll to top button
-            updateScrollToTop(currentScroll);
-            
-            // Update active menu item
             updateActiveMenuItem();
             
             lastScroll = currentScroll;
         });
         
-        // Scroll to top button
-        const scrollToTopBtn = $('#scrollToTop');
-        
-        function updateScrollToTop(scroll) {
-            if (scroll > 500) {
-                scrollToTopBtn.addClass('visible');
-            } else {
-                scrollToTopBtn.removeClass('visible');
-            }
-        }
-        
-        scrollToTopBtn.on('click', function() {
-            $('html, body').animate({
-                scrollTop: 0
-            }, 800);
-        });
-        
-        // Update active menu item based on scroll position
         function updateActiveMenuItem() {
             const scrollPosition = $(window).scrollTop() + 100;
             const sections = $('.section');
@@ -115,7 +85,6 @@
             });
         }
         
-        // Image lazy loading fallback
         if ('loading' in HTMLImageElement.prototype) {
             const images = document.querySelectorAll('img[loading="lazy"]');
             images.forEach(img => {
@@ -127,7 +96,6 @@
             document.body.appendChild(script);
         }
         
-        // Comments toggle
         $('.comment-reply-link').on('click', function(e) {
             e.preventDefault();
             const commentId = $(this).attr('data-commentid');
@@ -141,7 +109,6 @@
             }
         });
         
-        // Cancel comment reply
         $('#cancel-comment-reply-link').on('click', function(e) {
             e.preventDefault();
             const respondElement = $('#respond');
@@ -152,7 +119,6 @@
             $(this).hide();
         });
         
-        // Accessibility: Skip to content
         $('.skip-link').on('click', function(e) {
             const target = $(this.hash);
             if (target.length) {
@@ -165,7 +131,6 @@
             }
         });
         
-        // Blog grid equal heights
         function equalizeHeights() {
             if ($(window).width() > 768) {
                 $('.blog-grid article').each(function() {
@@ -188,7 +153,6 @@
             }
         }
         
-        // Simple debounce function
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -201,16 +165,13 @@
             };
         }
         
-        // Run on load and resize
         equalizeHeights();
         $(window).on('resize', debounce(equalizeHeights, 250));
         
-        // Trigger initial scroll check
         $(window).trigger('scroll');
         
-    }); // End document ready
+    });
     
-    // Window load events
     $(window).on('load', function() {
         $('.image-loading').removeClass('image-loading');
     });

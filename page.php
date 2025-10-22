@@ -11,12 +11,13 @@ if (!defined('ABSPATH')) {
 }
 
 get_header();
+
+$has_content = trim(get_the_content()) !== '';
 ?>
 
 <main id="primary" class="site-main">
 
     <?php if (has_post_thumbnail() && get_theme_mod('axai_show_page_header_image', true)) : ?>
-        <!-- Page Header with Featured Image -->
         <div class="page-header has-thumbnail">
             <div class="page-header-image">
                 <?php the_post_thumbnail('full'); ?>
@@ -29,6 +30,7 @@ get_header();
         </div>
     <?php endif; ?>
 
+    <?php if ($has_content) : ?>
     <div class="page-content-wrapper <?php echo esc_attr(get_theme_mod('axai_content_layout', 'boxed')); ?>">
         <div class="content-container <?php echo esc_attr(get_theme_mod('axai_content_width_type', 'boxed') === 'boxed' ? 'boxed' : 'full-width'); ?>">
             
@@ -41,7 +43,7 @@ get_header();
                     <?php if (!has_post_thumbnail() || !get_theme_mod('axai_show_page_header_image', true)) : ?>
                         <header class="entry-header">
                             <?php the_title('<h1 class="entry-title">', '</h1>'); ?>
-                        </header><!-- .entry-header -->
+                        </header>
                     <?php endif; ?>
 
                     <div class="entry-content">
@@ -53,7 +55,7 @@ get_header();
                             'after'  => '</div>',
                         ));
                         ?>
-                    </div><!-- .entry-content -->
+                    </div>
 
                     <?php if (get_edit_post_link()) : ?>
                         <footer class="entry-footer">
@@ -74,23 +76,23 @@ get_header();
                                 '</span>'
                             );
                             ?>
-                        </footer><!-- .entry-footer -->
+                        </footer>
                     <?php endif; ?>
-                </article><!-- #post-<?php the_ID(); ?> -->
+                </article>
 
                 <?php
-                // If comments are open or we have at least one comment, load up the comment template.
                 if (comments_open() || get_comments_number()) :
                     comments_template();
                 endif;
 
-            endwhile; // End of the loop.
+            endwhile;
             ?>
 
         </div>
     </div>
+    <?php endif; ?>
 
-</main><!-- #primary -->
+</main>
 
 <?php
 get_footer();
