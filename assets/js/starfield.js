@@ -798,8 +798,8 @@
                 baseX: x,
                 baseY: y,
                 baseZ: z,
-                velocity: Math.random() * 0.2 + 0.1,
-                rotationSpeed: config.galaxyRotationSpeed * (Math.random() * 0.5 + 0.75),
+                velocity: (galaxyType.speed !== undefined ? galaxyType.speed : config.galaxySpeed) * (Math.random() * 0.5 + 1.0),
+                rotationSpeed: (galaxyType.rotationSpeed !== undefined ? galaxyType.rotationSpeed : config.galaxyRotationSpeed) * (Math.random() * 0.5 + 0.75),
                 fadeIn: 0,
                 type: galaxyType.name
             };
@@ -1164,7 +1164,7 @@
                         galaxy.userData.fadeIn = Math.min(1, galaxy.userData.fadeIn + 0.02);
                         
                         const speedMultiplier = warpIntensity > 0.1 ? 1.0 : 0.15;
-                        galaxy.position.z += this.currentSpeed * galaxy.userData.velocity * config.galaxySpeed * speedMultiplier;
+                        galaxy.position.z += this.currentSpeed * galaxy.userData.velocity * speedMultiplier;
                         
                         galaxy.rotation.z += galaxy.userData.rotationSpeed;
                         
